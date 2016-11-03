@@ -16,19 +16,18 @@
 
 package com.wmz7year.thrift.pool;
 
+import com.wmz7year.thrift.pool.config.ThriftConnectionPoolConfig;
+import com.wmz7year.thrift.pool.config.ThriftServerInfo;
+import com.wmz7year.thrift.pool.connection.ThriftConnection;
+import com.wmz7year.thrift.pool.exception.ThriftConnectionPoolException;
+import org.apache.thrift.TServiceClient;
+
 import java.io.Serializable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.thrift.TServiceClient;
-
-import com.wmz7year.thrift.pool.config.ThriftConnectionPoolConfig;
-import com.wmz7year.thrift.pool.config.ThriftServerInfo;
-import com.wmz7year.thrift.pool.connection.ThriftConnection;
-import com.wmz7year.thrift.pool.exception.ThriftConnectionPoolException;
 
 /**
  * 连接分区实体类<br>
@@ -328,4 +327,7 @@ public class ThriftConnectionPartition<T extends TServiceClient> implements Seri
 		this.poolWatchThreadSignalQueue.offer(new Object());
 	}
 
+	public void registPoolRetryWatchThread(PoolRetryWatchThread<T> tPoolRetryWatchThread) {
+
+	}
 }

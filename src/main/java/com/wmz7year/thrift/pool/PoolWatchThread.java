@@ -167,6 +167,9 @@ public class PoolWatchThread<T extends TServiceClient> implements Runnable {
 				logger.error("Error in trying to obtain a connection in " + currentConnectionFailedCount
 						+ " count will remove the server", e);
 				thriftConnectionPool.destroyThriftConnectionPartition(thriftConnectionPartition);
+				thriftConnectionPool.addErrorThriftConnectionPartition(thriftConnectionPartition);
+				throw new InterruptedException();
+
 			} else {
 				logger.error("Error in trying to obtain a connection. Retrying in " + this.acquireRetryDelayInMs + "ms",
 						e);

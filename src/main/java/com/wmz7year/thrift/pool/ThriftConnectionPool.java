@@ -16,28 +16,6 @@
 
 package com.wmz7year.thrift.pool;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.thrift.TServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -49,6 +27,18 @@ import com.wmz7year.thrift.pool.connection.DefaultThriftConnection;
 import com.wmz7year.thrift.pool.connection.MulitServiceThriftConnecion;
 import com.wmz7year.thrift.pool.connection.ThriftConnection;
 import com.wmz7year.thrift.pool.exception.ThriftConnectionPoolException;
+import org.apache.thrift.TServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * thrift连接池主类
@@ -122,6 +112,14 @@ public class ThriftConnectionPool<T extends TServiceClient> implements Serializa
 	 * thrift服务类型 单服务还是多服务
 	 */
 	protected ThriftServiceType thriftServiceType;
+
+
+	/**
+	 * 目前不可用的servletList
+	 */
+	protected List<ThriftServerInfo> thriftServersInError;
+
+
 
 	/**
 	 * 构造器
@@ -722,4 +720,7 @@ public class ThriftConnectionPool<T extends TServiceClient> implements Serializa
 		return thriftServerCount;
 	}
 
+	public void addErrorThriftConnectionPartition(ThriftConnectionPartition<T> thriftConnectionPartition) {
+		TaskEngine.getInstance().submit(new PoolRetryWatchThread<>(thriftConnectionPartition, this));
+	}
 }
